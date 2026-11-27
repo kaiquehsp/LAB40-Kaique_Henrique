@@ -1,0 +1,54 @@
+
+name: prova
+
+on:
+  pull_request:
+    branches: ["main"]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Validar aplicacao
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar o codigo
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Analise estatica
+        run: npm run lint
+
+      - name: Verificar formatacao
+        run: npm run format:check
+
+      - name: Build da aplicacao
+        run: npm run build
+
+      - name: Testes unitarios
+        run: npm run test:unit
+
+      - name: Testes de integracao
+        run: npm run test:integration
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Criar imagem Docker
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: web-app:pr-${{ github.event.pull_request.number }}
