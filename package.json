@@ -6,9 +6,17 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "test": "node --test",
+    "lint": "eslint .",
+    "test:smoke": "node scripts/smoke.js"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "elint": "^2.0.1",
+    "eslint": "^10.16.0",
+    "prettier": "^3.10.1"
   }
 }
